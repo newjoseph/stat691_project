@@ -1,0 +1,566 @@
+---
+title: "Statistical Consulting Project1"
+author: "Minhyuk Kim"
+date: "2025-02-03"
+output: pdf_document
+---
+
+# Table of Contents
+
+-   Introduction
+
+-   Background
+
+  - 
+
+-   Research Question and Dataset Information
+
+-   Results
+
+-   Conclusion
+
+# Introduction
+
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(readxl)
+
+
+
+```
+## Age 14-18
+
+```{r}
+
+a <- read_excel('/Users/jasperstone/Desktop/Joseph/2025 Spring/STAT692/Project1/Project1_S25_14-18 Results.xlsx')
+a %>% dim
+
+head(a)
+
+a <- a %>% data.table()
+
+names(a)
+
+varlist <- list(
+  #score = names(a)[2],
+  education_rangeland = names(a)[6], #2
+  experience = names(a)[8], #3
+  #family_involvement = names(a)[10],
+  #range_plants_interest = names(a)[12],
+  threats_options = names(a)[14], #6
+  woody_encroachment = names(a)[16], #7
+  #red_cedar_trees = names(a)[18],
+  fire = names(a)[20], #9
+  #wildfire_difference = names(a)[22],
+  #prescribed_burns_opinion = names(a)[24],
+  #wildlife_effects = names(a)[26],
+  prescribed_burn = names(a)[28], #13
+  #landowner_fire_opinion = names(a)[30],
+  patch_burn_knowledge = names(a)[32], #15
+  multi_species_knowledge = names(a)[34], # 16
+  #multi_species_benefit = names(a)[36],
+  #rangeland_method_choice = names(a)[38],
+  #education_reasons = names(a)[40],
+  school_education_opinion = names(a)[42] #20
+)
+
+# Convert the varlist to a vector of column names
+selected_columns <- unlist(varlist)
+
+# Subset the data table 'a' with the selected columns
+subset_data <- a[, ..selected_columns]
+
+# Check the dimensions of the subset data
+dim(subset_data)
+dim(a)
+
+
+## Check values for different cases
+
+# Display unique values for each column
+unique_values <- lapply(subset_data, unique)
+
+# Print unique values
+unique_values
+
+## Change the weird values
+
+
+## Clean up cases
+subset_data[, (names(subset_data)) := lapply(.SD, function(x) gsub("[A-Za-z]", "", x))]
+#subset_data[, (names(subset_data)) := lapply(.SD, function(x) as.numeric(gsub("[A-Za-z]", "", x)))]
+
+unique_values_clean <- lapply(subset_data, unique)
+unique_values_clean
+
+
+# Function to standardize multiple-choice responses
+standardize_response <- function(x) {
+  x <- strsplit(x, ", ") # Split by comma and space
+  x <- lapply(x, function(y) sort(as.numeric(y))) # Convert to numeric & sort
+  x <- sapply(x, function(y) paste(y, collapse = ",")) # Rejoin sorted elements
+  return(x)
+}
+
+# Apply standardization to the relevant column
+subset_data[, (names(subset_data)) := lapply(.SD, standardize_response)]
+
+
+
+# Check unique values after standardization
+unique_values_standardized <- lapply(subset_data, unique)
+unique_values_standardized
+
+
+
+## factor
+subset_data[, (names(subset_data)) := lapply(.SD, function(x) as.factor(gsub("[A-Za-z]", "", x)))]
+
+
+# Convert all columns in subset_data to factors
+subset_data[, (names(subset_data)) := lapply(.SD, as.factor)]
+
+## Check the structure
+str(subset_data)
+
+subset_data %>% dim
+
+#########################################
+
+# Age 14-18
+subset_data$AgeGroup = 0
+
+Age14_18 <- subset_data
+
+
+```
+
+## Age 19-40
+```{r}
+
+a <- read_excel('/Users/jasperstone/Desktop/Joseph/2025 Spring/STAT692/Project1/Project1_S25_19-40 Results.xlsx') %>% data.table()
+a %>% dim
+head(a)
+
+names(a)
+
+varlist <- list(
+  #score = names(a)[2],
+  education_rangeland = names(a)[6], #2
+  experience = names(a)[8], #3
+  #family_involvement = names(a)[10],
+  #range_plants_interest = names(a)[12],
+  threats_options = names(a)[14], #6
+  woody_encroachment = names(a)[16], #7
+  #red_cedar_trees = names(a)[18],
+  fire = names(a)[20], #9
+  #wildfire_difference = names(a)[22],
+  #prescribed_burns_opinion = names(a)[24],
+  #wildlife_effects = names(a)[26],
+  prescribed_burn = names(a)[28], #13
+  #landowner_fire_opinion = names(a)[30],
+  patch_burn_knowledge = names(a)[32], #15
+  multi_species_knowledge = names(a)[34], # 16
+  #multi_species_benefit = names(a)[36],
+  #rangeland_method_choice = names(a)[38],
+  #education_reasons = names(a)[40],
+  school_education_opinion = names(a)[42] #20
+)
+
+# Convert the varlist to a vector of column names
+selected_columns <- unlist(varlist)
+
+# Subset the data table 'a' with the selected columns
+subset_data <- a[, ..selected_columns]
+
+# Check the dimensions of the subset data
+dim(subset_data)
+dim(a)
+
+
+## Check values for different cases
+
+# Display unique values for each column
+unique_values <- lapply(subset_data, unique)
+
+# Print unique values
+unique_values
+
+## Change the weird values
+
+
+## Clean up cases
+subset_data[, (names(subset_data)) := lapply(.SD, function(x) gsub("[A-Za-z]", "", x))]
+#subset_data[, (names(subset_data)) := lapply(.SD, function(x) as.numeric(gsub("[A-Za-z]", "", x)))]
+
+unique_values_clean <- lapply(subset_data, unique)
+unique_values_clean
+
+
+# Function to standardize multiple-choice responses
+standardize_response <- function(x) {
+  x <- strsplit(x, ", ") # Split by comma and space
+  x <- lapply(x, function(y) sort(as.numeric(y))) # Convert to numeric & sort
+  x <- sapply(x, function(y) paste(y, collapse = ",")) # Rejoin sorted elements
+  return(x)
+}
+
+# Apply standardization to the relevant column
+subset_data[, (names(subset_data)) := lapply(.SD, standardize_response)]
+
+
+
+# Check unique values after standardization
+unique_values_standardized <- lapply(subset_data, unique)
+unique_values_standardized
+
+
+
+## factor
+subset_data[, (names(subset_data)) := lapply(.SD, function(x) as.factor(gsub("[A-Za-z]", "", x)))]
+
+
+# Convert all columns in subset_data to factors
+subset_data[, (names(subset_data)) := lapply(.SD, as.factor)]
+
+## Check the structure
+str(subset_data)
+
+subset_data %>% dim
+
+#########################################
+
+# Age 19-40
+subset_data$AgeGroup = 1
+
+Age19_40 <- subset_data
+```
+
+
+# Age 40+
+```{r}
+
+a <- read_excel('/Users/jasperstone/Desktop/Joseph/2025 Spring/STAT692/Project1/Project1_S25_41+ Results.xlsx') %>% data.table()
+a %>% dim
+head(a)
+
+names(a)
+
+varlist <- list(
+  #score = names(a)[2],
+  education_rangeland = names(a)[6], #2
+  experience = names(a)[8], #3
+  #family_involvement = names(a)[10],
+  #range_plants_interest = names(a)[12],
+  threats_options = names(a)[14], #6
+  woody_encroachment = names(a)[16], #7
+  #red_cedar_trees = names(a)[18],
+  fire = names(a)[20], #9
+  #wildfire_difference = names(a)[22],
+  #prescribed_burns_opinion = names(a)[24],
+  #wildlife_effects = names(a)[26],
+  prescribed_burn = names(a)[28], #13
+  #landowner_fire_opinion = names(a)[30],
+  patch_burn_knowledge = names(a)[32], #15
+  multi_species_knowledge = names(a)[34], # 16
+  #multi_species_benefit = names(a)[36],
+  #rangeland_method_choice = names(a)[38],
+  #education_reasons = names(a)[40],
+  school_education_opinion = names(a)[42] #20
+)
+
+# Convert the varlist to a vector of column names
+selected_columns <- unlist(varlist)
+
+# Subset the data table 'a' with the selected columns
+subset_data <- a[, ..selected_columns]
+
+# Check the dimensions of the subset data
+dim(subset_data)
+dim(a)
+
+
+## Check values for different cases
+
+# Display unique values for each column
+unique_values <- lapply(subset_data, unique)
+
+# Print unique values
+unique_values
+
+## Change the weird values
+
+
+## Clean up cases
+subset_data[, (names(subset_data)) := lapply(.SD, function(x) gsub("[A-Za-z]", "", x))]
+#subset_data[, (names(subset_data)) := lapply(.SD, function(x) as.numeric(gsub("[A-Za-z]", "", x)))]
+
+unique_values_clean <- lapply(subset_data, unique)
+unique_values_clean
+
+
+# Function to standardize multiple-choice responses
+standardize_response <- function(x) {
+  x <- strsplit(x, ", ") # Split by comma and space
+  x <- lapply(x, function(y) sort(as.numeric(y))) # Convert to numeric & sort
+  x <- sapply(x, function(y) paste(y, collapse = ",")) # Rejoin sorted elements
+  return(x)
+}
+
+# Apply standardization to the relevant column
+subset_data[, (names(subset_data)) := lapply(.SD, standardize_response)]
+
+
+
+# Check unique values after standardization
+unique_values_standardized <- lapply(subset_data, unique)
+unique_values_standardized
+
+
+
+## factor
+subset_data[, (names(subset_data)) := lapply(.SD, function(x) as.factor(gsub("[A-Za-z]", "", x)))]
+
+
+# Convert all columns in subset_data to factors
+subset_data[, (names(subset_data)) := lapply(.SD, as.factor)]
+
+## Check the structure
+str(subset_data)
+
+subset_data %>% dim
+
+#########################################
+
+# Age 40+
+subset_data$AgeGroup = 2
+
+Age40 <- subset_data
+```
+
+```{r}
+
+Age14_18
+Age19_40
+Age40
+
+Age14_18 %>% dim
+Age19_40 %>% dim
+Age40 %>% dim
+
+# Combine all tables into one
+combined_data <- rbindlist(list(Age14_18, Age19_40, Age40), use.names = TRUE, fill = TRUE)
+
+# Check the combined dataset
+dim(combined_data)
+head(combined_data)
+
+varlist$AgeGroup = "AgeGroup"
+
+# Create a named vector from varlist (new names -> old names)
+rename_map <- setNames(names(varlist), unlist(varlist))
+
+# Rename columns in combined_data
+setnames(combined_data, old = names(rename_map), new = rename_map, skip_absent = TRUE)
+
+# Check updated column names
+names(combined_data)
+
+combined_data
+
+```
+
+
+## dim check
+```{r}
+Age14_18 %>% dim 
+Age19_40 %>% dim
+Age40 %>% dim
+combined_data %>% dim
+```
+
+
+
+## Threat
+```{r, eval=F, echo=F}
+library(tidyr)
+library(dplyr)
+
+# Ensure `threats_options` is a character column
+combined_data <- combined_data %>%
+  mutate(threats_options = as.character(threats_options))
+
+# Split multiple selections into separate rows
+combined_data_long <- combined_data %>%
+  separate_rows(threats_options, sep = ",")
+
+test <- combined_data %>%
+  separate_rows(threats_options, sep = ",")
+
+
+test2 <- test %>% separate_rows(fire, sep = ",")
+
+test3 <- test2 %>% separate_rows(prescribed_burn, sep = ",")
+
+
+# Convert to wide format with one-hot encoding
+combined_data_wide <- combined_data_long %>%
+  mutate(value = 1) %>%  # Create a column with 1s to indicate selection
+  pivot_wider(
+    names_from = threats_options,
+    values_from = value,
+    values_fill = 0 # Fill missing values with 0
+  )
+
+# Rename columns for clarity (threat_1, threat_2, ..., threat_7)
+colnames(combined_data_wide) <- gsub("^([1-7])$", "threat_\\1", colnames(combined_data_wide))
+```
+
+
+## all
+
+```{r}
+library(tidyr)
+library(dplyr)
+
+# Define columns that may contain multiple values (all except AgeGroup)
+multi_value_columns <- c(
+  "education_rangeland", "experience", "threats_options", "woody_encroachment",
+  "fire", "prescribed_burn", "patch_burn_knowledge", "multi_species_knowledge", "school_education_opinion"
+)
+
+# Convert all multi-value columns to character (important for `separate_rows`)
+combined_data <- combined_data %>%
+  mutate(across(all_of(multi_value_columns), as.character))
+
+# Apply `separate_rows()` to all target columns
+combined_data_long <- combined_data
+for (col in multi_value_columns) {
+  combined_data_long <- combined_data_long %>% separate_rows(all_of(col), sep = ",")
+}
+
+# View final structure
+dim(combined_data_long)  # Check expanded dimensions
+head(combined_data_long)
+```
+
+
+```{r}
+# Assuming combined_data_long is your dataframe
+combined_data_long <- combined_data_long[apply(combined_data_long, 1, function(x) !any(x == "")), ]
+combined_data_long %>% dim
+```
+
+```{r}
+
+library(dplyr)
+
+
+combined_data_long[] <- lapply(combined_data_long, function(x) as.numeric(as.character(x)))
+
+# Define the factors you want to analyze
+factors <- c("woody_encroachment", "fire", "patch_burn_knowledge", "multi_species_knowledge")
+
+# Perform Chi-Square test for each factor
+results <- lapply(factors, function(factor) {
+  
+  # Filter data and create a contingency table
+  chi_test_data <- combined_data_long %>%
+    filter(!is.na(.data[[factor]]), !is.na(threats_options)) %>%
+    count(.data[[factor]], threats_options) %>%
+    spread(key = threats_options, value = n, fill = 0) %>%
+    select(-.data[[factor]]) # Remove the factor column after spreading
+  
+  # Perform Chi-Square test
+  chi_test_result <- chisq.test(as.matrix(chi_test_data))
+  
+  # Return the result
+  list(factor = factor, p_value = chi_test_result$p.value)
+})
+
+# Combine results into a data frame
+results_df <- bind_rows(results)
+
+# Print the results
+print(results_df)
+```
+
+
+```{r}
+# Define the factors you want to analyze
+factors <- c("woody_encroachment", "fire", "patch_burn_knowledge", "multi_species_knowledge")
+
+# Get unique AgeGroup values
+age_groups <- unique(combined_data_long$AgeGroup)
+
+# Perform Chi-Square test for each factor and AgeGroup
+results <- lapply(age_groups, function(age_group) {
+  
+  # Filter data for the specific AgeGroup
+  age_group_data <- combined_data_long %>%
+    filter(AgeGroup == age_group, !is.na(threats_options))
+  
+  # Perform Chi-Square test for each factor
+  factor_results <- lapply(factors, function(factor) {
+    
+    # Create a contingency table
+    chi_test_data <- age_group_data %>%
+      count(.data[[factor]], threats_options) %>%
+      spread(key = threats_options, value = n, fill = 0) %>%
+      select(-.data[[factor]]) # Remove the factor column after spreading
+    
+    # Perform Chi-Square test
+    chi_test_result <- chisq.test(as.matrix(chi_test_data))
+    
+    # Return the result
+    list(factor = factor, p_value = chi_test_result$p.value)
+  })
+  
+  # Return results for each AgeGroup
+  data.frame(AgeGroup = age_group, results = factor_results)
+})
+
+# Combine all results into a single data frame
+final_results <- do.call(rbind, results)
+
+# Print the results
+print(final_results)
+```
+
+
+# Q5.
+
+```{r}
+# Ensure categorical variables are factors
+combined_data_binary <- combined_data_long %>%
+  mutate(
+    #school_education_opinion = factor(school_education_opinion, levels = c("Yes", "No", "Unsure")),
+    school_education_opinion = ifelse(school_education_opinion %in% c(1), "Yes", ifelse(school_education_opinion  %in% c(2), "No", "Unsure")),
+    education_rangeland = ifelse(education_rangeland %in% c(1, 2, 3), "Yes", "No"),
+    experience = ifelse(experience %in% c(1, 2), "Yes", "No")
+    )
+
+# Convert to factors for analysis
+combined_data_binary <- combined_data_binary %>%
+  mutate(
+    school_education_opinion = factor(school_education_opinion, levels = c("Yes", "No", "Unsure")),
+    education_rangeland = factor(education_rangeland, levels = c("No", "Yes")),
+    experience = factor(experience, levels = c("No", "Yes"))
+  )
+
+
+# Fit the multinomial logistic regression model
+multinom_model <- VGAM::vglm(school_education_opinion ~ experience + education_rangeland ,family=VGAM::multinomial(refLevel="Yes"),data=combined_data_binary)
+
+
+# Display model summary
+multinom_model
+
+# Odds ratios
+exp(coef(multinom_model))
+
+```
